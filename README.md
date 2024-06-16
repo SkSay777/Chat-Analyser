@@ -33,7 +33,7 @@ To run the WhatsApp Chat Analyzer application locally, follow these steps:
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/whatsapp-chat-analyzer.git
+    git clone https://github.com/SkSay777/whatsapp-chat-analyzer.git
     cd whatsapp-chat-analyzer
     ```
 
