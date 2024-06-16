@@ -92,10 +92,6 @@ Contributions are welcome! If you have any ideas or improvements, please open an
 4. Push to the branch: `git push origin feature-branch-name`.
 5. Open a pull request.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ---
 
 Feel free to reach out with any questions or suggestions! Enjoy analyzing your WhatsApp chats!
