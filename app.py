@@ -2,7 +2,6 @@ import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
-# from load_emoji_font import load_emoji_font  # Import the function
 
 # Sidebar setup
 st.sidebar.title("Whatsapp Chat Analyzer")
@@ -56,48 +55,40 @@ if nav_option == "Home":
             daily_timeline = helper.daily_timeline(selected_user, df)
             st.line_chart(daily_timeline, x='only_date', y='message')
 
-             # activity map
-        st.title('Activity Map')
-        col1,col2 = st.columns(2)
-
-        with col1:
-            st.header("Most busy day")
-            busy_day = helper.week_activity_map(selected_user,df)
-            st.bar_chart(busy_day, x='Day', y='message')
-            # fig,ax = plt.subplots()
-            # ax.bar(week_timeline['day_name'],week_timeline['message'],color='purple')
-            # plt.xticks(rotation='vertical')
-            # st.pyplot(fig)
-
-        with col2:
-            st.header("Most busy month")
-            busy_month = helper.month_activity_map(selected_user, df)
-            st.bar_chart(busy_month, x='Month', y='message')
-            # fig, ax = plt.subplots()
-            # ax.bar(busy_month['Month'],busy_month['message'],color='orange')
-            # plt.xticks(rotation='vertical')
-            # st.pyplot(fig)
-
-        st.title("Weekly Activity Map")
-        user_heatmap = helper.activity_heatmap(selected_user, df)
-        fig,ax = plt.subplots()
-        ax = sns.heatmap(user_heatmap, cmap='Blues')
-        st.pyplot(fig)
-
-        # finding the busiest users in the group(Group level)
-        if selected_user == 'Overall':
-            st.title('Most Busy Users')
-            x,new_df = helper.most_busy_users(df)
-            fig, ax = plt.subplots()
-
+            # Activity map
+            st.title('Activity Map')
             col1, col2 = st.columns(2)
 
             with col1:
-                ax.bar(x.index, x.values,color='cornflowerblue')
-                plt.xticks(rotation='vertical')
-                st.pyplot(fig)
+                st.header("Most busy day")
+                busy_day = helper.week_activity_map(selected_user, df)
+                st.bar_chart(busy_day, x='Day', y='message')
+
             with col2:
-                st.dataframe(new_df)
+                st.header("Most busy month")
+                busy_month = helper.month_activity_map(selected_user, df)
+                st.bar_chart(busy_month, x='Month', y='message')
+
+            st.title("Weekly Activity Map")
+            user_heatmap = helper.activity_heatmap(selected_user, df)
+            fig, ax = plt.subplots()
+            ax = sns.heatmap(user_heatmap, cmap='Blues')
+            st.pyplot(fig)
+
+            # finding the busiest users in the group (Group level)
+            if selected_user == 'Overall':
+                st.title('Most Busy Users')
+                x, new_df = helper.most_busy_users(df)
+                fig, ax = plt.subplots()
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    ax.bar(x.index, x.values, color='cornflowerblue')
+                    plt.xticks(rotation='vertical')
+                    st.pyplot(fig)
+                with col2:
+                    st.dataframe(new_df)
 
             # WordCloud
             st.title("Wordcloud")
@@ -115,6 +106,22 @@ if nav_option == "Home":
             st.title("Emoji Analysis")
             emoji_df = helper.emoji_helper(selected_user, df)
             st.bar_chart(emoji_df, x='emoji', y='count')
+
+            # Sentiment Analysis
+            st.title("Sentiment Analysis")
+            if selected_user == 'Overall':
+                positive_sentiment, negative_sentiment = helper.sentiment_analysis(selected_user, df)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.header("Most Positive Message")
+                    st.write(positive_sentiment[['user', 'message', 'sentiment']].iloc[0])
+
+                with col2:
+                    st.header("Most Negative Message")
+                    st.write(negative_sentiment[['user', 'message', 'sentiment']].iloc[0])
+            else:
+                user_sentiment = df[df['user'] == selected_user]
+                st.line_chart(user_sentiment[['date', 'sentiment']].set_index('date'))
 
 else:
     st.title("How To Use The Whatsapp Chat Analyzer")
@@ -134,6 +141,7 @@ else:
     - **Wordcloud**: Visual representation of the most common words.
     - **Most Common Words**: Bar chart of the most common words.
     - **Emoji Analysis**: Bar chart of the most used emojis.
+    - **Sentiment Analysis**: Shows sentiment analysis of messages for selected user and overall chat.
     
     ### How to Export WhatsApp Chat
     1. **Open WhatsApp** on your phone.

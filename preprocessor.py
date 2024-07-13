@@ -1,5 +1,10 @@
 import re
 import pandas as pd
+from nltk.sentiment import SentimentIntensityAnalyzer
+import nltk
+
+nltk.download('vader_lexicon')
+
 def preprocess(data):
     # function to convert time format to 24-hour format
     def convert_to_24_hour(match):
@@ -67,5 +72,9 @@ def preprocess(data):
             period.append(str(hour) + "-" + str(hour + 1))
 
     df['period'] = period
+
+    # Sentiment Analysis
+    sia = SentimentIntensityAnalyzer()
+    df['sentiment'] = df['message'].apply(lambda x: sia.polarity_scores(x)['compound'])
 
     return df
