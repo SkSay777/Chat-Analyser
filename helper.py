@@ -3,8 +3,10 @@ from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
 import emoji
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 extract = URLExtract()
+analyzer = SentimentIntensityAnalyzer()
 
 def fetch_stats(selected_user, df):
     if selected_user != 'Overall':
@@ -137,7 +139,28 @@ def sentiment_analysis(selected_user, df):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
+    df['sentiment'] = df['message'].apply(lambda x: analyzer.polarity_scores(x)['compound'])
     positive_sentiment = df[df['sentiment'] > 0.5].sort_values(by='sentiment', ascending=False).head(1)
     negative_sentiment = df[df['sentiment'] < -0.5].sort_values(by='sentiment', ascending=True).head(1)
 
     return positive_sentiment, negative_sentiment
+
+def sentiment_distribution(selected_user, df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    df['sentiment'] = df['message'].apply(lambda x: analyzer.polarity_scores(x)['compound'])
+    sentiment_counts = df['sentiment'].apply(lambda x: 'Positive' if x > 0 else ('Negative' if x < 0 else 'Neutral')).value_counts()
+    sentiment_counts_df = pd.DataFrame(sentiment_counts).reset_index().rename(columns={'index': 'Sentiment', 'sentiment': 'Sentiment'})
+
+    return sentiment_counts_df
+
+
+def daily_sentiment_trend(selected_user, df):
+    if selected_user != 'Overall':
+        df = df[df['user'] == selected_user]
+
+    df['sentiment'] = df['message'].apply(lambda x: analyzer.polarity_scores(x)['compound'])
+    daily_sentiment = df.groupby('only_date')['sentiment'].mean().reset_index()
+
+    return daily_sentiment

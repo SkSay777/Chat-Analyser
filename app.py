@@ -3,10 +3,8 @@ import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Sidebar setup
 st.sidebar.title("Whatsapp Chat Analyzer")
 
-# Navbar for section selection
 nav_option = st.sidebar.radio("Navigation", ["Home", "How To"])
 
 if nav_option == "Home":
@@ -109,20 +107,25 @@ if nav_option == "Home":
 
             # Sentiment Analysis
             st.title("Sentiment Analysis")
-            if selected_user == 'Overall':
-                positive_sentiment, negative_sentiment = helper.sentiment_analysis(selected_user, df)
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.header("Most Positive Message")
-                    st.write(positive_sentiment[['user', 'message', 'sentiment']].iloc[0])
+            positive_sentiment, negative_sentiment = helper.sentiment_analysis(selected_user, df)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.header("Most Positive Message")
+                st.write(positive_sentiment[['user', 'message', 'sentiment']].iloc[0])
 
-                with col2:
-                    st.header("Most Negative Message")
-                    st.write(negative_sentiment[['user', 'message', 'sentiment']].iloc[0])
-            else:
-                user_sentiment = df[df['user'] == selected_user]
-                st.line_chart(user_sentiment[['date', 'sentiment']].set_index('date'))
+            with col2:
+                st.header("Most Negative Message")
+                st.write(negative_sentiment[['user', 'message', 'sentiment']].iloc[0])
 
+            # Sentiment Distribution
+            st.title("Sentiment Distribution")
+            sentiment_counts_df = helper.sentiment_distribution(selected_user, df)
+            st.bar_chart(sentiment_counts_df, x='count', y='Sentiment')
+
+            # Daily Sentiment Trend
+            st.title("Daily Sentiment Trend")
+            daily_sentiment = helper.daily_sentiment_trend(selected_user, df)
+            st.line_chart(daily_sentiment, x='only_date', y='sentiment')
 else:
     st.title("How To Use The Whatsapp Chat Analyzer")
     st.markdown("""
@@ -141,7 +144,6 @@ else:
     - **Wordcloud**: Visual representation of the most common words.
     - **Most Common Words**: Bar chart of the most common words.
     - **Emoji Analysis**: Bar chart of the most used emojis.
-    - **Sentiment Analysis**: Shows sentiment analysis of messages for selected user and overall chat.
     
     ### How to Export WhatsApp Chat
     1. **Open WhatsApp** on your phone.
