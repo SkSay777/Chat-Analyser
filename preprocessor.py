@@ -1,12 +1,33 @@
 import re
 import pandas as pd
-from nltk.sentiment import SentimentIntensityAnalyzer
-import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-nltk.download('vader_lexicon')
+lexicon_file = 'vader_lexicon.txt'
 
 def preprocess(data):
-    # function to convert time format to 24-hour format
+    # Load custom Vader lexicon from file
+    with open(lexicon_file, 'r', encoding='utf-8') as f:
+        lexicon_lines = f.readlines()
+
+    custom_lexicon = {}
+    for line in lexicon_lines:
+        # Skip empty lines or lines that cannot be split into exactly two parts
+        line = line.strip()
+        if line and '\t' in line:
+            parts = line.split('\t')
+            if len(parts) == 2:
+                word, score = parts
+                custom_lexicon[word] = float(score)
+            else:
+                print(f"Warning: Skipped invalid line in {lexicon_file}: {line}")
+        else:
+            print(f"Warning: Skipped invalid line in {lexicon_file}: {line}")
+
+    # Initialize NLTK's Sentiment Intensity Analyzer with custom lexicon
+    sia = SentimentIntensityAnalyzer()
+    sia.lexicon.update(custom_lexicon)
+
+    # Function to convert time format to 24-hour format
     def convert_to_24_hour(match):
         time_str = match.group()
         time_obj = re.match(r'(\d{1,2}):(\d{2})\s([ap]m)', time_str)
@@ -74,7 +95,6 @@ def preprocess(data):
     df['period'] = period
 
     # Sentiment Analysis
-    sia = SentimentIntensityAnalyzer()
     df['sentiment'] = df['message'].apply(lambda x: sia.polarity_scores(x)['compound'])
 
     return df
