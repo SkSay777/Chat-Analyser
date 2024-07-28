@@ -2,6 +2,7 @@ import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 st.sidebar.title("Whatsapp Chat Analyzer")
 

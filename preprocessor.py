@@ -1,11 +1,14 @@
 import re
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
-lexicon_file = 'vader_lexicon.txt'
+import nltk
 
 def preprocess(data):
+    # Download the VADER lexicon if not already present
+    nltk.download('vader_lexicon')
+    
     # Load custom Vader lexicon from file
+    lexicon_file = 'vader_lexicon.txt'
     with open(lexicon_file, 'r', encoding='utf-8') as f:
         lexicon_lines = f.readlines()
 
